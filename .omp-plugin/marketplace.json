@@ -1,0 +1,21 @@
+{
+  "name": "skills",
+  "owner": {
+    "name": "ning",
+    "email": "ningyuan.sg@gmail.com"
+  },
+  "metadata": {
+    "description": "Personal skill collection installable one skill at a time."
+  },
+  "plugins": [
+    {
+      "name": "suggestcommit",
+      "description": "Suggests five Conventional Commits messages for the current git changes and commits the selected one.",
+      "source": "./plugins/suggestcommit",
+      "version": "0.1.0",
+      "author": {
+        "name": "ning"
+      }
+    }
+  ]
+}
