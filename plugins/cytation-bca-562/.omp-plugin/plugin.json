@@ -1,0 +1,9 @@
+{
+  "name": "cytation-bca-562",
+  "version": "0.5.0",
+  "description": "Parse Cytation 562-nm BCA Excel files into PDF reports.",
+  "author": {
+    "name": "ning",
+    "email": "ningyuan.sg@gmail.com"
+  }
+}

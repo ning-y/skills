@@ -9,6 +9,15 @@
   },
   "plugins": [
     {
+      "name": "cytation-bca-562",
+      "description": "Parse Cytation 562-nm BCA Excel files into PDF reports.",
+      "source": "./plugins/cytation-bca-562",
+      "version": "0.5.0",
+      "author": {
+        "name": "ning"
+      }
+    },
+    {
       "name": "suggestcommit",
       "description": "Suggests five Conventional Commits messages for the current git changes and commits the selected one.",
       "source": "./plugins/suggestcommit",
