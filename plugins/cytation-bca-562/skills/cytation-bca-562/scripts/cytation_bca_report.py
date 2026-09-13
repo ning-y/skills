@@ -42,6 +42,7 @@ DEFAULT_STANDARD_CONC_UG_UL = DEFAULT_STANDARD_CONC_UG_ML / 1000.0
 # this renders once in the PDF and remains searchable in extracted text.
 WARNING_MARK = "⚠"
 EMPTY_WELL_CUTOFF_OD = 0.065
+OVERFLOW_OD = 4.0
 
 
 def parse_concentrations_arg(conc_str: Optional[str]) -> tuple[np.ndarray, np.ndarray]:
@@ -111,6 +112,8 @@ def parse_standards_arg(standards_str: Optional[str]) -> list[tuple[str, str]]:
             # 8 rows x 2 cols: pairs are (Row_i,Col1), (Row_i,Col2)
             c_left, c_right = col_min, col_max
             return [(f"{ROWS[row_min + i]}{c_left + 1}", f"{ROWS[row_min + i]}{c_right + 1}") for i in range(8)]
+        elif num_rows == 8 and num_cols == 12:
+            raise ValueError(f"standards range {standards_str!r} defines full plate; specify 16 wells (e.g. A11:H12 or 11:12)")
         else:
             raise ValueError(f"standards range {standards_str!r} must define 16 wells (2x8 or 8x2) for 8 duplicate pairs")
     
@@ -210,6 +213,8 @@ def finite_number(value: Any) -> Optional[float]:
         text = value.strip().replace(",", "")
         if not text:
             return None
+        if text.upper() in ("OVRFLW", "OVERFLOW", ">4.0", "> 4.0", ">4"):
+            return OVERFLOW_OD
         try:
             number = float(text)
         except ValueError:
@@ -221,6 +226,8 @@ def finite_number(value: Any) -> Optional[float]:
 
 def display_number(value: Any) -> str:
     """Preserve the source-like decimal precision for raw numeric cells."""
+    if isinstance(value, str) and value.strip().upper() in ("OVRFLW", "OVERFLOW", ">4.0", "> 4.0", ">4"):
+        return value.strip()
     number = finite_number(value)
     if number is None:
         return "N/A"
@@ -700,10 +707,14 @@ def draw_heatmap_page(
             cell.get_text().set_fontweight("bold")
         else:
             value = values[row_index - 1, col_index - 1]
-            colour = cmap(normalizer(value))
-            cell.set_facecolor(colour)
-            luminance = 0.2126 * colour[0] + 0.7152 * colour[1] + 0.0722 * colour[2]
-            cell.get_text().set_color("white" if luminance < 0.58 else "#1b1b1b")
+            if value >= OVERFLOW_OD:
+                cell.set_facecolor("#fbb4ae")
+                cell.get_text().set_color("#800026")
+            else:
+                colour = cmap(normalizer(value))
+                cell.set_facecolor(colour)
+                luminance = 0.2126 * colour[0] + 0.7152 * colour[1] + 0.0722 * colour[2]
+                cell.get_text().set_color("white" if luminance < 0.58 else "#1b1b1b")
     ax.set_title("Raw absorbance values", fontsize=9, loc="left", pad=8, color="#333333")
 
     cax = fig.add_axes([0.16, 0.29, 0.68, 0.018])
@@ -977,6 +988,9 @@ def draw_concentration_plate_page(
             if is_excluded or (not is_standard and raw_val < EMPTY_WELL_CUTOFF_OD):
                 cell.set_facecolor("#ffffff")
                 cell.get_text().set_color("#1b1b1b")
+            elif raw_val >= OVERFLOW_OD:
+                cell.set_facecolor("#fbb4ae")
+                cell.get_text().set_color("#800026")
             elif math.isfinite(value):
                 colour = cmap(normalizer(value))
                 cell.set_facecolor(colour)
@@ -1127,19 +1141,31 @@ def build_report(
         for col_index, col_number in enumerate(COLS):
             well = f"{row_name}{col_number}"
             raw_val = values[row_index, col_index]
-            raw = display_number(ws.cell(candidate.start_row + row_index, candidate.start_col + col_index).value)
+            cell_raw_val = ws.cell(candidate.start_row + row_index, candidate.start_col + col_index).value
+            raw = display_number(cell_raw_val)
             is_standard = well in standard_coords_set
             is_excluded = well in excluded_coords_set
-            
+            is_overflow = isinstance(cell_raw_val, str) and cell_raw_val.strip().upper() in ("OVRFLW", "OVERFLOW", ">4.0", "> 4.0", ">4")
+
             # If well is explicitly excluded, leave blank
             if is_excluded:
                 display_row.append("")
                 continue
 
             # If well is below empty cutoff and not a standard well, leave blank
-            if not is_standard and raw_val < EMPTY_WELL_CUTOFF_OD:
+            if not is_standard and not is_overflow and raw_val < EMPTY_WELL_CUTOFF_OD:
                 display_row.append("")
                 # Do not treat empty wells as errors/flags
+                continue
+
+            if is_overflow:
+                concentration = f">2.000 {WARNING_MARK}" if not is_standard else ">2.000"
+                inverse_reasons = ("absorbance detector overflow (OVRFLW > 4.0 OD)",)
+                display_row.append(concentration)
+                record = (well, raw, concentration, inverse_reasons)
+                all_rows.append(record)
+                if not is_standard:
+                    flags.append(record)
                 continue
 
             inverse = inverse_4pl(
