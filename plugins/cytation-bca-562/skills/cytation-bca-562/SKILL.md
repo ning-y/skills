@@ -33,13 +33,14 @@ Use this skill when the user supplies an Excel workbook that is clearly a BioTek
 Run the bundled helper through `terminal`:
 
 ```bash
-python3 /data/.hermes/skills/productivity/cytation-bca-562/scripts/cytation_bca_report.py INPUT.xlsx --output REPORT.pdf [--standards C1:D8] [--exclude A1:B12] [--concentrations 2000,1500,1000,750,500,250,125,0]
+python3 /data/.hermes/skills/productivity/cytation-bca-562/scripts/cytation_bca_report.py INPUT.xlsx --output REPORT.pdf [--standards A1:H8] [--exclude A1:B12] [--concentrations 2000,1500,1000,750,500,250,125,0] [--photos PHOTO1.jpg PHOTO2.png]
 ```
 
 Optional CLI flags:
-- `--standards` / `-s`: Standard coordinate range or pairs (default: `A1:B8`, matching A1+B1 through A8+B8; supports e.g. `C1:D8` for plate reuse).
+- `--standards` / `-s`: Standard coordinate range or pairs (default: `A1:B8`, matching A1+B1 through A8+B8; supports e.g. `C1:D8` or column-wise/custom layouts).
 - `--exclude` / `-e`: Explicit wells or ranges to exclude (e.g. `A1:B12,D1`), rendering them blank on the concentration map. Blank/empty wells with OD < 0.065 remain automatically excluded by default.
 - `--concentrations` / `-c`: Comma-separated nominal standards in µg/mL (default: `2000,1500,1000,750,500,250,125,0`).
+- `--photos` / `-p`: Image file paths to append directly as extra pages to the final PDF report (no special formatting needed).
 
 If the system Python lacks the dependencies, invoke the active Hermes venv Python instead. The script prints a JSON result containing the output path, detected sheet, fitted parameters, fit metrics, and warning flags.
 

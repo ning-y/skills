@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, time
 from pathlib import Path
 from typing import Any, Iterable, Optional
+from PIL import Image
 
 import matplotlib
 
@@ -1042,6 +1043,42 @@ def draw_concentration_plate_page(
     plt.close(fig)
 
 
+def append_photos_to_pdf(pdf_path: Path, photo_paths: list[Path]) -> None:
+    """Append image files as subsequent pages to an existing PDF report using pypdf and PIL/matplotlib."""
+    if not photo_paths:
+        return
+    import io
+    from pypdf import PdfReader, PdfWriter
+    
+    writer = PdfWriter()
+    reader = PdfReader(str(pdf_path))
+    for page in reader.pages:
+        writer.add_page(page)
+        
+    for photo in photo_paths:
+        if not photo.exists():
+            continue
+        fig = plt.figure(figsize=A4)
+        ax = fig.add_axes([0.05, 0.05, 0.90, 0.90])
+        ax.axis("off")
+        try:
+            img = Image.open(photo)
+            ax.imshow(img)
+            buf = io.BytesIO()
+            fig.savefig(buf, format="pdf", bbox_inches="tight", pad_inches=0.1)
+            plt.close(fig)
+            buf.seek(0)
+            img_pdf_reader = PdfReader(buf)
+            for img_page in img_pdf_reader.pages:
+                writer.add_page(img_page)
+        except Exception as e:
+            plt.close(fig)
+            continue
+            
+    with open(pdf_path, "wb") as f:
+        writer.write(f)
+
+
 def draw_flags_pages(
     pdf: PdfPages,
     flags: list[tuple[str, str, str, tuple[str, ...]]],
@@ -1099,6 +1136,7 @@ def build_report(
     standards_arg: Optional[str] = None,
     exclude_arg: Optional[str] = None,
     concentrations_arg: Optional[str] = None,
+    photos: Optional[list[Path]] = None,
 ) -> dict[str, Any]:
     ws, candidate, metadata, wavelengths = choose_plate(input_path)
     values = candidate.values
@@ -1212,6 +1250,9 @@ def build_report(
         page_number += 1
         page_number = draw_flags_pages(pdf, flags, page_number, total_pages)
 
+    if photos:
+        append_photos_to_pdf(output_path, photos)
+
     warnings_list: list[str] = []
     if not fit.monotonic:
         warnings_list.append("standard means are non-monotonic")
@@ -1263,6 +1304,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--standards", "-s", type=str, default=None, help="standard coordinate range (default: A1:B8 or C1:D8)")
     parser.add_argument("--exclude", "-e", type=str, default=None, help="wells to exclude (e.g. A1:B12, D1)")
     parser.add_argument("--concentrations", "-c", type=str, default=None, help="comma-separated 8 standard concentrations in ug/mL (default: 2000,1500,1000,750,500,250,125,0)")
+    parser.add_argument("--photos", "-p", nargs="*", type=Path, default=[], help="optional photo/image file paths to append to the report PDF")
     args = parser.parse_args(argv)
     try:
         result = build_report(
@@ -1271,6 +1313,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             standards_arg=args.standards,
             exclude_arg=args.exclude,
             concentrations_arg=args.concentrations,
+            photos=args.photos,
         )
     except (InputError, OSError, ValueError) as exc:
         print(json.dumps({"error": str(exc)}, ensure_ascii=False), file=sys.stderr)
