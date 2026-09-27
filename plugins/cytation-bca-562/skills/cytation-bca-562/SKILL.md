@@ -14,7 +14,7 @@ metadata:
 
 # Cytation BCA 562-nm Report Skill
 
-Use this skill when the user supplies an Excel workbook that is clearly a BioTek Cytation5/Cytation 5 export for a 96-well absorbance-endpoint read at 562 nm. Parse the raw plate and produce a portrait A4 PDF with a raw-absorbance plate table, an ascending 4PL calibration plot, and a matching 8×12 plate table containing inverse-4PL concentrations. The helper script performs deterministic validation, fitting, rendering, and PDF creation.
+Use this skill when the user supplies an Excel workbook that is clearly a BioTek Cytation5/Cytation 5 export for a 96-well absorbance-endpoint read at 562 nm. Parse the raw plate and produce a portrait A4 PDF consolidated 1-page report containing an ascending 4PL calibration plot, fitted equation & parameters, a raw-absorbance plate table, a matching 8×12 plate table containing inverse-4PL concentrations, and a quality control notes card (with any optional photo attachments appended as trailing pages). The helper script performs deterministic validation, fitting, rendering, and PDF creation.
 
 ## When to Use
 
@@ -53,7 +53,7 @@ Nominal standards: 2, 1.5, 1, 0.75, 0.5, 0.25, 0.125, 0 µg/µL (or parameterize
 4PL: bottom + (top-bottom)/(1 + (EC50/x)^HillSlope)
 Fit: eight duplicate means, equal weighting, raw absorbance, no blank subtraction
 Inverse: every well, including standards
-PDF: A4 portrait; raw plate table, curve, estimated-concentration plate table
+PDF: A4 portrait; 1-page consolidated layout (curve + raw plate + concentration plate + QC notes), trailing photo pages
 ```
 
 ## Procedure
@@ -64,8 +64,8 @@ PDF: A4 portrait; raw plate table, curve, estimated-concentration plate table
 4. Calculate each standard mean and sample SD (`n−1`, two replicates). Fit all four 4PL parameters freely by unweighted nonlinear least squares in µg/µL, using the zero-standard convention `y(0) = bottom`. Print bottom, top, EC50, Hill slope, R², and RMSE from the eight means on the raw absorbance scale.
 5. Assess monotonicity separately: expected standard means increase from the blank toward the 2-µg/µL standard. Fit and retain non-monotonic data, but flag the calibration. Do not impose parameter constraints. Flag a nonphysical fit if its parameters do not represent a normal ascending curve. If a free fit has an unidentifiable upper plateau/EC50 ridge, retain the free-fit result and report that limitation rather than silently bounding or fixing parameters.
 6. Invert the fitted model for every well. Return finite mathematical extrapolations and mark them `⚠` for non-standard wells. For absorbance below the fitted bottom or above the fitted top, report the signed inverse-odds diagnostic (negative below bottom, positive above top), retaining the numeric value. A1:B8 are calibration sanity-check wells: show their inverse estimates without `⚠` even when noise puts them slightly outside the nominal range. The separate flags block lists only flagged non-standard wells and their reasons.
-7. Render the PDF on A4 portrait pages: (i) metadata header, an 8×12 plate table with raw absorbance values, preserved source decimal precision, continuous white-to-blue min–max scaling, and legend; (ii) a linear x-axis 0–2 µg/µL plot with duplicate points, mean points, sample-SD error bars when nonzero, fitted curve, and fit summary; (iii) an 8×12 plate table in the same geometry and coordinate labelling as section 1, with inverse-4PL estimates in each cell, three decimal places for finite concentrations, a concentration colour scale, and flags shown in the cells plus a flags block. Include no dilution correction.
-8. Verify the output with `pypdf` by checking it opens, has expected pages, and contains the three section headings, source filename, well coordinates, fitted parameters, and concentration table text. Only then deliver the cleaned PDF.
+7. Render the consolidated 1-page PDF layout on portrait A4: (i) metadata header bar; (ii) 4PL calibration curve plot with duplicate points, mean points, sample-SD error bars, fitted curve, and parameters/goodness-of-fit card; (iii) 8×12 raw absorbance plate table with continuous white-to-blue scaling; (iv) 8×12 estimated concentrations plate table with inverse-4PL estimates, 3 decimal places, concentration colour scale, standard well borders, and `⚠` flags; (v) rounded Notes & Quality Control card summarizing standards, flagged wells, diagnostics, and exclusions. Any supplied `--photos` are appended as clean trailing pages.
+8. Verify the output with `pypdf` by checking it opens, has expected pages, and contains the section headings, source filename, well coordinates, fitted parameters, and concentration table text. Only then deliver the cleaned PDF.
 
 ## Pitfalls
 

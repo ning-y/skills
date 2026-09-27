@@ -19,7 +19,10 @@ from dataclasses import dataclass
 from datetime import date, datetime, time
 from pathlib import Path
 from typing import Any, Iterable, Optional
+import io
 from PIL import Image
+import matplotlib.patches as patches
+from pypdf import PdfReader, PdfWriter
 
 import matplotlib
 
@@ -27,9 +30,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
-from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.colors import LinearSegmentedColormap, Normalize
-from matplotlib.font_manager import FontProperties
+from matplotlib.transforms import Bbox
 from openpyxl import load_workbook
 from scipy.optimize import least_squares
 from scipy.special import expit
@@ -637,497 +639,305 @@ def inverse_4pl(
     return InverseResult(value, tuple(reasons))
 
 
-def make_metadata_lines(input_path: Path, metadata: dict[str, str]) -> list[str]:
-    return [
-        f"Source: {input_path.name}",
-        f"Date: {metadata['date']}    Time: {metadata['time']}",
-        f"Reader: {metadata['reader']}    Serial: {metadata['serial']}",
-        f"Plate: {metadata['plate_type']}    Temperature: {metadata['temperature']}",
-        f"Read: absorbance endpoint    Wavelength: {metadata['wavelength']}",
-    ]
-
-
-def set_common_page_style(fig: Any, page_number: int, total_pages: int) -> None:
-    fig.text(
-        0.5,
-        0.018,
-        f"Cytation BCA 562-nm report  ·  page {page_number} of {total_pages}",
-        ha="center",
-        va="bottom",
-        fontsize=7,
-        color="#666666",
-    )
-
-
-def add_page_header(fig: Any, title: str, subtitle: str = "") -> None:
-    fig.text(0.055, 0.965, title, ha="left", va="top", fontsize=15, fontweight="bold", color="#17365d")
-    if subtitle:
-        fig.text(0.055, 0.935, subtitle, ha="left", va="top", fontsize=8.5, color="#444444")
-
-
-def draw_heatmap_page(
-    pdf: PdfPages,
+def draw_consolidated_page(
     input_path: Path,
     metadata: dict[str, str],
     values: np.ndarray,
     raw_display: list[list[str]],
-    page_number: int,
-    total_pages: int,
-) -> None:
-    fig = plt.figure(figsize=A4)
-    add_page_header(fig, "1. Raw absorbance plate", "96-well plate · 562 nm · values are unblank-corrected raw absorbance")
-    y = 0.895
-    for line in make_metadata_lines(input_path, metadata):
-        fig.text(0.055, y, line, ha="left", va="top", fontsize=8, color="#333333")
-        y -= 0.022
-
-    ax = fig.add_axes([0.055, 0.36, 0.89, 0.39])
-    ax.axis("off")
-    cell_text_data = [[""] + [str(col) for col in COLS]]
-    cell_text_data.extend([[row] + raw_display[i] for i, row in enumerate(ROWS)])
-    table = ax.table(
-        cellText=cell_text_data,
-        cellLoc="center",
-        colLoc="center",
-        bbox=[0.0, 0.0, 1.0, 1.0],
-        colWidths=[0.075] + [0.077] * 12,
-    )
-    table.auto_set_font_size(False)
-    table.set_fontsize(7.6)
-    valid = values[np.isfinite(values)]
-    vmin = float(np.min(valid))
-    vmax = float(np.max(valid))
-    cmap = LinearSegmentedColormap.from_list("white_blue", ["#f7fbff", "#08519c"])
-    normalizer = Normalize(vmin=vmin, vmax=vmax if vmax > vmin else vmin + 1.0)
-    for (row_index, col_index), cell in table.get_celld().items():
-        cell.set_edgecolor("#777777")
-        cell.set_linewidth(0.5)
-        if row_index == 0 or col_index == 0:
-            cell.set_facecolor("#d9e8f5")
-            cell.get_text().set_color("#17365d")
-            cell.get_text().set_fontweight("bold")
-        else:
-            value = values[row_index - 1, col_index - 1]
-            if value >= OVERFLOW_OD:
-                cell.set_facecolor("#fbb4ae")
-                cell.get_text().set_color("#800026")
-            else:
-                colour = cmap(normalizer(value))
-                cell.set_facecolor(colour)
-                luminance = 0.2126 * colour[0] + 0.7152 * colour[1] + 0.0722 * colour[2]
-                cell.get_text().set_color("white" if luminance < 0.58 else "#1b1b1b")
-    ax.set_title("Raw absorbance values", fontsize=9, loc="left", pad=8, color="#333333")
-
-    cax = fig.add_axes([0.16, 0.29, 0.68, 0.018])
-    scalar = cm.ScalarMappable(norm=normalizer, cmap=cmap)
-    scalar.set_array(valid)
-    colourbar = fig.colorbar(scalar, cax=cax, orientation="horizontal")
-    colourbar.ax.tick_params(labelsize=7, length=2)
-    colourbar.set_label("Absorbance colour scale (plate minimum to maximum)", fontsize=8, labelpad=3)
-    fig.text(
-        0.055,
-        0.22,
-        "Rows A–H and columns 1–12 are the source plate coordinates. Raw values retain their source decimal precision.",
-        ha="left",
-        va="top",
-        fontsize=8,
-        color="#444444",
-    )
-    set_common_page_style(fig, page_number, total_pages)
-    pdf.savefig(fig)
-    plt.close(fig)
-
-
-def draw_curve_page(
-    pdf: PdfPages,
-    input_path: Path,
-    metadata: dict[str, str],
     replicate_values: np.ndarray,
     means: np.ndarray,
     sds: np.ndarray,
     fit: FitResult,
-    std_conc_ug_ml: np.ndarray,
     std_conc_ug_ul: np.ndarray,
-    page_number: int,
-    total_pages: int,
-) -> None:
-    fig = plt.figure(figsize=A4)
-    add_page_header(
-        fig,
-        "2. 4PL calibration curve",
-        "Equal-weighted duplicate means · raw absorbance without blank subtraction · concentrations converted from µg/mL to µg/µL",
+    standard_pairs: list[tuple[str, str]],
+    standard_coords_set: set[str],
+    excluded_coords_set: set[str],
+    concentration_values: np.ndarray,
+    concentration_display: list[list[str]],
+    flags: list[tuple[str, str, str, tuple[str, ...]]],
+) -> io.BytesIO:
+    """Render the 1-page consolidated BCA report to an in-memory PDF buffer."""
+    plt.rcParams["font.sans-serif"] = ["DejaVu Sans", "Helvetica", "Arial"]
+    fig = plt.figure(figsize=A4, dpi=300)
+
+    # ------------------ HEADER ------------------
+    fig.text(0.06, 0.965, "BCA Assay w/ Cytation 5 (562 nm)", fontsize=15.5, fontweight="bold", color="#0b3c5d")
+
+    # 2-line Metadata bar
+    clean_name = input_path.name
+    if "doc_" in clean_name and "_" in clean_name:
+        clean_name = clean_name.split("_", 2)[-1]
+    meta_line1 = f"Source: {clean_name}   |   Date: {metadata.get('date', 'N/A')} {metadata.get('time', '')}   |   Reader: {metadata.get('reader', 'Cytation5')} (S/N: {metadata.get('serial', 'N/A')})"
+    meta_line2 = f"Plate: {metadata.get('plate_type', '96 WELL PLATE')}   |   Temperature: {metadata.get('temperature', '25.1 °C')}   |   Wavelength: 562 nm (Absorbance endpoint)"
+    meta_box_text = f"{meta_line1}\n{meta_line2}"
+
+    fig.text(
+        0.06,
+        0.932,
+        meta_box_text,
+        fontsize=6.8,
+        color="#222222",
+        linespacing=1.3,
+        va="center",
+        bbox=dict(boxstyle="round,pad=0.45", facecolor="#f0f4f8", edgecolor="#c0d0e0", linewidth=0.7),
     )
-    ax = fig.add_axes([0.13, 0.39, 0.80, 0.49])
+
+    # ------------------ SECTION 1: 4PL Calibration ------------------
+    fig.text(0.06, 0.892, "1. 4PL Calibration Curve & Parameters", fontsize=10.5, fontweight="bold", color="#17365d")
+
+    # Calibration Curve Plot
+    ax_curve = fig.add_axes((0.10, 0.738, 0.38, 0.140))
+
     max_c = float(np.max(std_conc_ug_ul))
-    curve_x = np.linspace(0.0, max_c if max_c > 0 else 2.0, 600)
-    curve_y = four_pl_model(
-        curve_x, fit.bottom, fit.top, fit.ec50, fit.hill_slope
-    )
-    finite_curve = curve_y[np.isfinite(curve_y)]
-    all_y = np.concatenate([replicate_values.ravel(), finite_curve])
-    ymin = float(np.min(all_y))
-    ymax = float(np.max(all_y))
-    margin = max(0.03, (ymax - ymin) * 0.10)
-    ax.plot(curve_x, curve_y, color="#1f77b4", linewidth=2.0, label="Fitted 4PL")
-    for index, concentration in enumerate(std_conc_ug_ul):
-        ax.scatter(
-            [concentration, concentration],
-            replicate_values[index],
-            color="#777777",
-            edgecolor="white",
-            linewidth=0.5,
-            s=30,
-            zorder=3,
-            label="Individual duplicates" if index == 0 else None,
-        )
-    ax.errorbar(
+    curve_x = np.linspace(0.0, max_c if max_c > 0 else 2.0, 400)
+    curve_y = four_pl_model(curve_x, fit.bottom, fit.top, fit.ec50, fit.hill_slope)
+
+    ax_curve.plot(curve_x, curve_y, color="#1f77b4", linewidth=1.6, label="Fitted 4PL", zorder=2)
+    for c_val, pair in zip(std_conc_ug_ul, replicate_values):
+        ax_curve.scatter([c_val, c_val], pair, color="#666666", s=12, alpha=0.75, zorder=3)
+    ax_curve.errorbar(
         std_conc_ug_ul,
         means,
         yerr=sds,
         fmt="D",
-        color="#c23b22",
-        markerfacecolor="#c23b22",
-        markeredgecolor="white",
-        markersize=5.5,
-        capsize=3,
-        linewidth=1,
+        color="#c0392b",
+        ecolor="#c0392b",
+        elinewidth=1.0,
+        capsize=2.5,
+        markersize=3.5,
+        label="Mean ± SD",
         zorder=4,
-        label="Mean ± sample SD",
     )
-    for concentration, mean, nominal in zip(std_conc_ug_ul, means, std_conc_ug_ml):
-        ax.annotate(
-            f"{concentration:g}",
-            (concentration, mean),
-            xytext=(3, 5),
+
+    # Annotate nominal standard labels
+    for c_val, m_val in zip(std_conc_ug_ul, means):
+        x_off = -7 if c_val > 1.8 else (5 if c_val < 0.1 else 0)
+        y_off = 5 if c_val > 1.8 else 4
+        ha_align = "right" if c_val > 1.8 else ("left" if c_val < 0.1 else "center")
+        ax_curve.annotate(
+            f"{c_val:g}",
+            (c_val, m_val),
             textcoords="offset points",
-            fontsize=6.5,
+            xytext=(x_off, y_off),
+            ha=ha_align,
+            fontsize=5.8,
             color="#333333",
         )
-    ax.set_xlim(0.0, max_c if max_c > 0 else 2.0)
-    ax.set_ylim(ymin - margin, ymax + margin)
-    ax.set_xlabel("Concentration (µg/µL)", fontsize=9)
-    ax.set_ylabel("Absorbance at 562 nm", fontsize=9)
-    ax.set_title("BCA standard response and fitted four-parameter logistic model", fontsize=10, color="#333333")
-    ax.grid(True, color="#dddddd", linewidth=0.6)
-    ax.legend(loc="best", fontsize=7.5, frameon=True)
-    fit_lines = [
-        f"bottom = {fit.bottom:.6g}    top = {fit.top:.6g}",
-        f"EC50 = {fit.ec50:.6g} µg/µL    Hill slope = {fit.hill_slope:.6g}",
-        f"R² = {fit.r2:.6g}    RMSE = {fit.rmse:.6g} absorbance units",
-        "4PL: y = bottom + (top − bottom) / (1 + (EC50 / x)^HillSlope); y(0) = bottom",
-    ]
-    y_text = 0.305
-    for line in fit_lines:
-        fig.text(0.10, y_text, line, ha="left", va="top", fontsize=8, family="DejaVu Sans", color="#333333")
-        y_text -= 0.022
-    if not fit.monotonic:
-        fig.text(
-            0.10,
-            0.205,
-            f"{WARNING_MARK} Calibration warning: standard means are not monotonic in increasing concentration order; fit retained.",
-            ha="left",
-            va="top",
-            fontsize=8,
-            color="#a33a00",
-        )
-    if not fit.physical_ascending:
-        fig.text(
-            0.10,
-            0.18,
-            f"{WARNING_MARK} Fit warning: fitted parameters do not describe a conventional ascending 4PL; inverse results are limited to mathematically defined wells.",
-            ha="left",
-            va="top",
-            fontsize=8,
-            color="#a33a00",
-        )
-    identifiability_warning = fit_identifiability_warning(fit, std_conc_ug_ul)
-    if identifiability_warning:
-        fig.text(
-            0.10,
-            0.155,
-            f"{WARNING_MARK} Fit identifiability: {identifiability_warning}.",
-            ha="left",
-            va="top",
-            fontsize=8,
-            color="#a33a00",
-        )
-    set_common_page_style(fig, page_number, total_pages)
-    pdf.savefig(fig)
-    plt.close(fig)
 
+    ax_curve.set_xlabel("Concentration (µg/µL)", fontsize=7.2, labelpad=2)
+    ax_curve.set_ylabel("Absorbance (562 nm)", fontsize=7.2, labelpad=2)
+    ax_curve.set_xlim(-0.08, 2.15)
+    ax_curve.set_ylim(0.0, max(1.2, float(np.max(replicate_values)) * 1.15))
+    ax_curve.tick_params(labelsize=6.2)
+    ax_curve.grid(True, color="#e5e5e5", linewidth=0.5, linestyle="--")
+    ax_curve.legend(fontsize=6.2, loc="upper left", framealpha=0.92)
 
-def draw_well_table_page(
-    pdf: PdfPages,
-    input_path: Path,
-    rows: list[tuple[str, str, str, tuple[str, ...]]],
-    page_number: int,
-    total_pages: int,
-    first: bool,
-) -> None:
-    fig = plt.figure(figsize=A4)
-    add_page_header(
-        fig,
-        "3. Estimated concentrations" if first else "3. Estimated concentrations (continued)",
-        "Inverse 4PL estimate for every well · concentration unit: µg/µL · no dilution-factor correction",
+    # 4PL Parameters summary box
+    std_coords_label = f"{standard_pairs[0][0]}:{standard_pairs[-1][1]}" if standard_pairs else "Standards"
+    ax_stats = fig.add_axes((0.51, 0.730, 0.43, 0.148))
+    ax_stats.axis("off")
+    stats_text = (
+        "4PL Model Equation:\n"
+        r"  $y = \mathrm{bottom} + \frac{\mathrm{top} - \mathrm{bottom}}{1 + (\mathrm{EC}_{50} / x)^{\mathrm{HillSlope}}}$" + "\n\n"
+        "Fitted Parameters:\n"
+        f"  • Bottom = {fit.bottom:.6f}   • Top = {fit.top:.4f}\n"
+        f"  • EC50 = {fit.ec50:.5f} µg/µL   • Hill Slope = {fit.hill_slope:.5f}\n\n"
+        "Goodness of Fit:\n"
+        f"  • R² = {fit.r2:.6f}   • RMSE = {fit.rmse:.6f} OD\n"
+        f"  • Standards: Wells {std_coords_label} duplicate series (2.0 to 0.0 µg/µL)\n"
+        f"  • Monotonic: {'Yes' if fit.monotonic else 'No'}  |  Valid fit: {'Yes' if fit.physical_ascending else 'No'}"
     )
-    if first:
-        fig.text(
-            0.055,
-            0.895,
-            f"Source: {input_path.name}",
-            ha="left",
-            va="top",
-            fontsize=8,
-            color="#444444",
-        )
-        fig.text(
-            0.055,
-            0.872,
-            "Three columns: well coordinate  ·  raw absorbance  ·  estimated concentration",
-            ha="left",
-            va="top",
-            fontsize=8,
-            color="#444444",
-        )
-    headers = ["Well", "Raw absorbance", "Estimated concentration (µg/µL)"]
-    table_data = [headers] + [[well, raw, concentration] for well, raw, concentration, _ in rows]
-    ax = fig.add_axes([0.07, 0.15, 0.86, 0.69 if first else 0.78])
-    ax.axis("off")
-    table = ax.table(
-        cellText=table_data,
-        cellLoc="center",
-        colLoc="center",
-        bbox=[0, 0, 1, 1],
-        colWidths=[0.16, 0.30, 0.54],
-    )
-    table.auto_set_font_size(False)
-    table.set_fontsize(8.0)
-    for (row_index, col_index), cell in table.get_celld().items():
-        cell.set_edgecolor("#888888")
-        cell.set_linewidth(0.45)
-        if row_index == 0:
-            cell.set_facecolor("#d9e8f5")
-            cell.get_text().set_fontweight("bold")
-            cell.get_text().set_color("#17365d")
-        else:
-            cell.set_facecolor("#ffffff" if row_index % 2 else "#f7f9fb")
-            if col_index == 2 and rows[row_index - 1][3]:
-                cell.set_facecolor("#fff1c7")
-                cell.get_text().set_color("#8a3b00")
-    set_common_page_style(fig, page_number, total_pages)
-    pdf.savefig(fig)
-    plt.close(fig)
-
-
-def draw_concentration_plate_page(
-    pdf: PdfPages,
-    input_path: Path,
-    values: np.ndarray,
-    concentration_values: np.ndarray,
-    concentration_display: list[list[str]],
-    page_number: int,
-    total_pages: int,
-    flags: list[tuple[str, str, str, tuple[str, ...]]],
-    standard_coords_set: set[str],
-    excluded_coords_set: set[str],
-) -> None:
-    """Render section 3 using the same 8 x 12 plate geometry as section 1."""
-    fig = plt.figure(figsize=A4)
-    add_page_header(
-        fig,
-        "3. Estimated concentrations",
-        "96-well plate · inverse 4PL estimates · concentrations in µg/µL · no dilution-factor correction",
-    )
-    fig.text(
-        0.055,
-        0.895,
-        f"Source: {input_path.name}    ·    Values correspond to the A–H / 1–12 well coordinates",
-        ha="left",
+    ax_stats.text(
+        0.02,
+        0.98,
+        stats_text,
+        transform=ax_stats.transAxes,
+        fontsize=6.7,
         va="top",
-        fontsize=8,
-        color="#444444",
+        ha="left",
+        color="#222222",
+        linespacing=1.25,
+        bbox=dict(boxstyle="round,pad=0.5", facecolor="#fafbfc", edgecolor="#d0d7de", linewidth=0.8),
     )
 
-    ax = fig.add_axes([0.055, 0.36, 0.89, 0.39])
-    ax.axis("off")
-    cell_text_data = [[""] + [str(col) for col in COLS]]
-    cell_text_data.extend([[row] + concentration_display[i] for i, row in enumerate(ROWS)])
-    table = ax.table(
-        cellText=cell_text_data,
+    # ------------------ SECTION 2: Raw Absorbance Plate Table ------------------
+    fig.text(0.06, 0.692, "2. Raw Absorbance Plate (OD 562 nm)", fontsize=10.5, fontweight="bold", color="#17365d")
+
+    valid = values[np.isfinite(values)]
+    vmin = float(np.min(valid))
+    vmax = float(np.max(valid))
+    cmap_blue = LinearSegmentedColormap.from_list("white_blue", ["#f7fbff", "#08519c"])
+    norm_raw = Normalize(vmin=vmin, vmax=vmax if vmax > vmin else vmin + 1.0)
+
+    # Colorbar
+    cax_raw = fig.add_axes((0.62, 0.688, 0.32, 0.009))
+    sm_raw = cm.ScalarMappable(norm=norm_raw, cmap=cmap_blue)
+    sm_raw.set_array(valid)
+    cb_raw = fig.colorbar(sm_raw, cax=cax_raw, orientation="horizontal")
+    cb_raw.ax.tick_params(labelsize=5.5, length=1.5, pad=1)
+    cax_raw.set_title("Raw Absorbance (OD 562 nm)", fontsize=6.2, pad=3, color="#333333")
+
+    # Table bounds
+    ax_raw = fig.add_axes((0.06, 0.450, 0.88, 0.215))
+    ax_raw.axis("off")
+
+    cell_text_raw = [[""] + [str(col) for col in COLS]]
+    cell_text_raw.extend([[row] + raw_display[i] for i, row in enumerate(ROWS)])
+    table_raw = ax_raw.table(
+        cellText=cell_text_raw,
         cellLoc="center",
         colLoc="center",
-        bbox=[0.0, 0.0, 1.0, 1.0],
-        colWidths=[0.075] + [0.077] * 12,
+        bbox=Bbox.from_bounds(0.0, 0.0, 1.0, 1.0),
+        colWidths=[0.05] + [0.0791] * 12,
     )
-    table.auto_set_font_size(False)
-    table.set_fontsize(7.6)
-    finite = concentration_values[np.isfinite(concentration_values)]
-    if finite.size:
-        cmin = float(np.min(finite))
-        cmax = float(np.max(finite))
-    else:
-        cmin, cmax = 0.0, 1.0
-    # Match section 1's blue table styling; the legend and normalization are
-    # still based on estimated concentration rather than absorbance.
-    cmap = LinearSegmentedColormap.from_list("white_blue", ["#f7fbff", "#08519c"])
-    normalizer = Normalize(vmin=cmin, vmax=cmax if cmax > cmin else cmin + 1.0)
-    flagged_coordinates = {item[0] for item in flags}
-    for (row_index, col_index), cell in table.get_celld().items():
-        cell.set_edgecolor("#777777")
-        cell.set_linewidth(0.5)
-        if row_index == 0 or col_index == 0:
+    table_raw.auto_set_font_size(False)
+    table_raw.set_fontsize(6.5)
+
+    for (r_idx, c_idx), cell in table_raw.get_celld().items():
+        cell.set_edgecolor("#888888")
+        cell.set_linewidth(0.4)
+        if r_idx == 0 or c_idx == 0:
             cell.set_facecolor("#d9e8f5")
             cell.get_text().set_color("#17365d")
             cell.get_text().set_fontweight("bold")
         else:
-            value = concentration_values[row_index - 1, col_index - 1]
-            raw_val = values[row_index - 1, col_index - 1]
-            coordinate = f"{ROWS[row_index - 1]}{col_index}"
-            is_standard = coordinate in standard_coords_set
-            is_excluded = coordinate in excluded_coords_set
-            
-            if is_excluded or (not is_standard and raw_val < EMPTY_WELL_CUTOFF_OD):
-                cell.set_facecolor("#ffffff")
-                cell.get_text().set_color("#1b1b1b")
-            elif raw_val >= OVERFLOW_OD:
+            val = values[r_idx - 1, c_idx - 1]
+            if val >= OVERFLOW_OD:
                 cell.set_facecolor("#fbb4ae")
                 cell.get_text().set_color("#800026")
-            elif math.isfinite(value):
-                colour = cmap(normalizer(value))
-                cell.set_facecolor(colour)
-                luminance = 0.2126 * colour[0] + 0.7152 * colour[1] + 0.0722 * colour[2]
-                cell.get_text().set_color("white" if luminance < 0.58 else "#1b1b1b")
+                cell.get_text().set_fontweight("bold")
+            else:
+                col = cmap_blue(norm_raw(val))
+                cell.set_facecolor(col)
+                lum = 0.2126 * col[0] + 0.7152 * col[1] + 0.0722 * col[2]
+                cell.get_text().set_color("white" if lum < 0.58 else "#1b1b1b")
+
+    # ------------------ SECTION 3: Estimated Concentrations Plate Table ------------------
+    fig.text(0.06, 0.418, "3. Estimated Concentrations (µg/µL, Inverse 4PL)", fontsize=10.5, fontweight="bold", color="#17365d")
+
+    finite = concentration_values[np.isfinite(concentration_values)]
+    cmin = float(np.min(finite)) if finite.size else 0.0
+    cmax = float(np.max(finite)) if finite.size else 1.0
+    norm_conc = Normalize(vmin=cmin, vmax=cmax if cmax > cmin else cmin + 1.0)
+    flagged_coords = {item[0] for item in flags}
+
+    # Colorbar
+    cax_conc = fig.add_axes((0.62, 0.414, 0.32, 0.009))
+    sm_conc = cm.ScalarMappable(norm=norm_conc, cmap=cmap_blue)
+    sm_conc.set_array(finite if finite.size else np.array([0.0]))
+    cb_conc = fig.colorbar(sm_conc, cax=cax_conc, orientation="horizontal")
+    cb_conc.ax.tick_params(labelsize=5.5, length=1.5, pad=1)
+    cax_conc.set_title("Concentration (µg/µL)", fontsize=6.2, pad=3, color="#333333")
+
+    # Table bounds
+    ax_conc = fig.add_axes((0.06, 0.176, 0.88, 0.215))
+    ax_conc.axis("off")
+
+    cell_text_conc = [[""] + [str(col) for col in COLS]]
+    cell_text_conc.extend([[row] + concentration_display[i] for i, row in enumerate(ROWS)])
+    table_conc = ax_conc.table(
+        cellText=cell_text_conc,
+        cellLoc="center",
+        colLoc="center",
+        bbox=Bbox.from_bounds(0.0, 0.0, 1.0, 1.0),
+        colWidths=[0.05] + [0.0791] * 12,
+    )
+    table_conc.auto_set_font_size(False)
+    table_conc.set_fontsize(6.0)
+
+    for (r_idx, c_idx), cell in table_conc.get_celld().items():
+        cell.set_edgecolor("#888888")
+        cell.set_linewidth(0.4)
+        if r_idx == 0 or c_idx == 0:
+            cell.set_facecolor("#d9e8f5")
+            cell.get_text().set_color("#17365d")
+            cell.get_text().set_fontweight("bold")
+        else:
+            val = concentration_values[r_idx - 1, c_idx - 1]
+            raw_v = values[r_idx - 1, c_idx - 1]
+            coord = f"{ROWS[r_idx - 1]}{c_idx}"
+            is_std = coord in standard_coords_set
+            is_exc = coord in excluded_coords_set
+
+            if is_exc or (not is_std and raw_v < EMPTY_WELL_CUTOFF_OD):
+                cell.set_facecolor("#ffffff")
+                cell.get_text().set_color("#888888")
+            elif raw_v >= OVERFLOW_OD:
+                cell.set_facecolor("#fbb4ae")
+                cell.get_text().set_color("#800026")
+                cell.get_text().set_fontweight("bold")
+            elif np.isfinite(val):
+                col = cmap_blue(norm_conc(val))
+                cell.set_facecolor(col)
+                lum = 0.2126 * col[0] + 0.7152 * col[1] + 0.0722 * col[2]
+                cell.get_text().set_color("white" if lum < 0.58 else "#1b1b1b")
             else:
                 cell.set_facecolor("#fff1c7")
                 cell.get_text().set_color("#8a3b00")
-            if coordinate in flagged_coordinates:
-                cell.set_edgecolor("#b45f06")
-                cell.set_linewidth(1.2)
-    ax.set_title("Estimated concentration values", fontsize=9, loc="left", pad=8, color="#333333")
 
-    cax = fig.add_axes([0.16, 0.29, 0.68, 0.018])
-    scalar = cm.ScalarMappable(norm=normalizer, cmap=cmap)
-    scalar.set_array(finite if finite.size else np.array([0.0]))
-    colourbar = fig.colorbar(scalar, cax=cax, orientation="horizontal")
-    colourbar.ax.tick_params(labelsize=7, length=2)
-    colourbar.set_label("Concentration colour scale (finite estimates, µg/µL)", fontsize=8, labelpad=3)
-    fig.text(
-        0.055,
-        0.22,
-        "Same plate layout as section 1. Inverse-4PL estimates; flagged non-standard cells are outlined and marked with ⚠.",
-        ha="left",
-        va="top",
-        fontsize=8,
-        color="#444444",
+            # Outline styling
+            if coord in flagged_coords:
+                cell.set_edgecolor("#d9534f")
+                cell.set_linewidth(1.1)
+                cell.set_linestyle("-")
+            elif is_std:
+                cell.set_edgecolor("#000000")
+                cell.set_linewidth(1.1)
+                cell.set_linestyle(":")
+
+    # ------------------ SECTION 4: Notes & Quality Control ------------------
+    ax_notes = fig.add_axes((0.06, 0.038, 0.88, 0.115))
+    ax_notes.axis("off")
+
+    rect = patches.FancyBboxPatch(
+        (0.0, 0.0),
+        1.0,
+        1.0,
+        boxstyle="round,pad=0.0,rounding_size=0.025",
+        facecolor="#fafbfc",
+        edgecolor="#d0d7de",
+        linewidth=0.8,
+        transform=ax_notes.transAxes,
+        clip_on=False,
     )
-    fig.text(
-        0.055,
-        0.20,
-        "Standard wells are sanity checks and are never caution-marked.",
-        ha="left",
-        va="top",
-        fontsize=8,
-        color="#444444",
+    ax_notes.add_patch(rect)
+
+    ax_notes.text(
+        0.018,
+        0.85,
+        "Notes & Quality Control:",
+        fontsize=7.4,
+        fontweight="bold",
+        color="#17365d",
+        va="center",
+        transform=ax_notes.transAxes,
     )
-    fig.text(
-        0.055,
-        0.18,
-        "Negative values are signed diagnostics, not physical concentrations. Empty/excluded wells are blank.",
-        ha="left",
+
+    std_desc = f"Wells {std_coords_label} duplicate series (2.000 to 0.000 µg/µL BSA, dotted black border)."
+    b1 = f"• Standards: {std_desc}"
+    b2 = f"• {WARNING_MARK} Flagged Wells: Wells marked with {WARNING_MARK} (red borders) exceed the 2.0 µg/µL calibration range or detector OVRFLW (>4.0 OD)."
+    b3 = "• Diagnostics: Negative values are signed fit diagnostics, not physical concentrations. Blank wells indicate baseline (<0.065 OD)."
+    exc_list_str = ", ".join(sorted(list(excluded_coords_set))) if excluded_coords_set else "None"
+    b4 = f"• Excluded Wells: {exc_list_str}" if len(exc_list_str) < 90 else f"• Excluded Wells: {len(excluded_coords_set)} wells excluded per protocol."
+
+    bullets_combined = f"{b1}\n{b2}\n{b3}\n{b4}"
+    ax_notes.text(
+        0.018,
+        0.70,
+        bullets_combined,
+        fontsize=6.6,
+        color="#222222",
         va="top",
-        fontsize=8,
-        color="#444444",
+        ha="left",
+        linespacing=1.25,
+        transform=ax_notes.transAxes,
     )
-    set_common_page_style(fig, page_number, total_pages)
-    pdf.savefig(fig)
+
+    page1_buf = io.BytesIO()
+    fig.savefig(page1_buf, format="pdf", bbox_inches=None)
     plt.close(fig)
-
-
-def append_photos_to_pdf(pdf_path: Path, photo_paths: list[Path]) -> None:
-    """Append image files as subsequent pages to an existing PDF report using pypdf and PIL/matplotlib."""
-    if not photo_paths:
-        return
-    import io
-    from pypdf import PdfReader, PdfWriter
-    
-    writer = PdfWriter()
-    reader = PdfReader(str(pdf_path))
-    for page in reader.pages:
-        writer.add_page(page)
-        
-    for photo in photo_paths:
-        if not photo.exists():
-            continue
-        fig = plt.figure(figsize=A4)
-        ax = fig.add_axes([0.05, 0.05, 0.90, 0.90])
-        ax.axis("off")
-        try:
-            img = Image.open(photo)
-            ax.imshow(img)
-            buf = io.BytesIO()
-            fig.savefig(buf, format="pdf", bbox_inches="tight", pad_inches=0.1)
-            plt.close(fig)
-            buf.seek(0)
-            img_pdf_reader = PdfReader(buf)
-            for img_page in img_pdf_reader.pages:
-                writer.add_page(img_page)
-        except Exception as e:
-            plt.close(fig)
-            continue
-            
-    with open(pdf_path, "wb") as f:
-        writer.write(f)
-
-
-def draw_flags_pages(
-    pdf: PdfPages,
-    flags: list[tuple[str, str, str, tuple[str, ...]]],
-    page_number_start: int,
-    total_pages: int,
-) -> int:
-    if not flags:
-        return page_number_start
-    chunk_size = 30
-    page_number = page_number_start
-    for offset in range(0, len(flags), chunk_size):
-        chunk = flags[offset : offset + chunk_size]
-        fig = plt.figure(figsize=A4)
-        add_page_header(
-            fig,
-            "Flags for section 3" if offset == 0 else "Flags for section 3 (continued)",
-            f"{WARNING_MARK} appears in flagged concentration cells; finite extrapolations and signed diagnostics are reported.",
-        )
-        data = [["Well", "Raw absorbance", "Reported concentration", "Reason"]]
-        for well, raw, concentration, reasons in chunk:
-            data.append([well, raw, concentration, "; ".join(reasons)])
-        # Keep the flags block compact: it is supplementary to the plate
-        # table, so use ordinary table rows rather than stretching two rows
-        # over nearly the full page.
-        ax = fig.add_axes([0.055, 0.60, 0.89, 0.22])
-        ax.axis("off")
-        table = ax.table(
-            cellText=data,
-            cellLoc="left",
-            colLoc="center",
-            bbox=[0, 0, 1, 1],
-            colWidths=[0.12, 0.22, 0.29, 0.37],
-        )
-        table.auto_set_font_size(False)
-        table.set_fontsize(8.0)
-        for (row_index, col_index), cell in table.get_celld().items():
-            cell.set_edgecolor("#aa8a55")
-            cell.set_linewidth(0.45)
-            if row_index == 0:
-                cell.set_facecolor("#ffe7a6")
-                cell.get_text().set_fontweight("bold")
-            else:
-                cell.set_facecolor("#fffaf0" if row_index % 2 else "#fff3d4")
-                cell.get_text().set_color("#6e3500")
-        set_common_page_style(fig, page_number, total_pages)
-        pdf.savefig(fig)
-        plt.close(fig)
-        page_number += 1
-    return page_number
+    page1_buf.seek(0)
+    return page1_buf
 
 
 def build_report(
@@ -1223,35 +1033,55 @@ def build_report(
                 flags.append(record)
         concentration_display.append(display_row)
 
-    table_page_count = 1
-    flags_page_count = math.ceil(len(flags) / 30) if flags else 0
-    total_pages = 2 + table_page_count + flags_page_count
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with PdfPages(output_path) as pdf:
-        info = pdf.infodict()
-        info["Title"] = f"Cytation BCA 562-nm report - {input_path.name}"
-        info["Author"] = "Hermes Agent"
-        info["Subject"] = "96-well BCA absorbance and 4PL concentration report"
-        draw_heatmap_page(pdf, input_path, metadata, values, raw_display, 1, total_pages)
-        draw_curve_page(pdf, input_path, metadata, replicate_values, means, sds, fit, std_conc_ug_ml, std_conc_ug_ul, 2, total_pages)
-        page_number = 3
-        draw_concentration_plate_page(
-            pdf,
-            input_path,
-            values,
-            concentration_values,
-            concentration_display,
-            page_number,
-            total_pages,
-            flags,
-            standard_coords_set,
-            excluded_coords_set,
-        )
-        page_number += 1
-        page_number = draw_flags_pages(pdf, flags, page_number, total_pages)
+    page1_buf = draw_consolidated_page(
+        input_path,
+        metadata,
+        values,
+        raw_display,
+        replicate_values,
+        means,
+        sds,
+        fit,
+        std_conc_ug_ul,
+        standard_pairs,
+        standard_coords_set,
+        excluded_coords_set,
+        concentration_values,
+        concentration_display,
+        flags,
+    )
 
+    writer = PdfWriter()
+    p1_reader = PdfReader(page1_buf)
+    for p in p1_reader.pages:
+        writer.add_page(p)
+
+    total_pages = 1
     if photos:
-        append_photos_to_pdf(output_path, photos)
+        for photo in photos:
+            if not photo.exists():
+                continue
+            fig_photo = plt.figure(figsize=A4)
+            ax_p = fig_photo.add_axes((0.05, 0.05, 0.90, 0.90))
+            ax_p.axis("off")
+            try:
+                img = Image.open(photo)
+                ax_p.imshow(img)
+                photo_buf = io.BytesIO()
+                fig_photo.savefig(photo_buf, format="pdf", bbox_inches="tight", pad_inches=0.1)
+                plt.close(fig_photo)
+                photo_buf.seek(0)
+                photo_reader = PdfReader(photo_buf)
+                for p in photo_reader.pages:
+                    writer.add_page(p)
+                    total_pages += 1
+            except Exception as e:
+                plt.close(fig_photo)
+                continue
+
+    with open(output_path, "wb") as f:
+        writer.write(f)
 
     warnings_list: list[str] = []
     if not fit.monotonic:
