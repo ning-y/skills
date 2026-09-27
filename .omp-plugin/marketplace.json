@@ -25,6 +25,15 @@
       "author": {
         "name": "ning"
       }
+    },
+    {
+      "name": "microscopy-softwares-and-formats",
+      "description": "Diagnose, stitch, and quantify Fiji/ImageJ and EVOS M7000 microscopy datasets.",
+      "source": "./plugins/microscopy-softwares-and-formats",
+      "version": "0.1.0",
+      "author": {
+        "name": "ning"
+      }
     }
   ]
 }
