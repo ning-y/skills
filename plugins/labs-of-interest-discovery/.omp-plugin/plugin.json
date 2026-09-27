@@ -1,0 +1,8 @@
+{
+  "name": "labs-of-interest-discovery",
+  "version": "0.1.0",
+  "description": "Discover disease-relevant wet-and-dry labs from recent PubMed papers at predefined institutes.",
+  "author": {
+    "name": "ning"
+  }
+}

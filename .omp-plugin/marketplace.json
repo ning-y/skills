@@ -34,6 +34,15 @@
       "author": {
         "name": "ning"
       }
+    },
+    {
+      "name": "labs-of-interest-discovery",
+      "description": "Discover disease-relevant wet-and-dry labs from recent PubMed papers at predefined institutes.",
+      "source": "./plugins/labs-of-interest-discovery",
+      "version": "0.1.0",
+      "author": {
+        "name": "ning"
+      }
     }
   ]
 }
