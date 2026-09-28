@@ -43,6 +43,15 @@
       "author": {
         "name": "ning"
       }
+    },
+    {
+      "name": "labs-of-interest-evaluate",
+      "description": "Research and compile evidence-based lab reports with methods and alumni outcomes.",
+      "source": "./plugins/labs-of-interest-evaluate",
+      "version": "0.1.0",
+      "author": {
+        "name": "ning"
+      }
     }
   ]
 }

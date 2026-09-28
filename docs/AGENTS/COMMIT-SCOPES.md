@@ -1,3 +1,4 @@
 - **cytation-bca-562** — Cytation 5 BCA 562-nm 1-page consolidated absorbance report generator
 - **suggestcommit** — Conventional Commits commit message suggestions
 - **readme** — Repository README and top-level documentation
+- **labs-of-interest-evaluate** — Evidence-based lab screening reports
