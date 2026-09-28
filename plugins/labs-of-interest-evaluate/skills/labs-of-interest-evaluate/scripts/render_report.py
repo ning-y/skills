@@ -43,6 +43,11 @@ def main():
     ensure(len(directions) == 2, "Provide exactly one stated and one inferred direction")
     ensure({p["source_type"] for p in directions} == {"stated", "inferred"}, "Distinguish stated research directions from publication-based inference")
     ensure(all(p.get("refs") for p in directions), "Cite each scientific problem statement")
+    rie = data["rie2030_alignment"]
+    ensure(rie.get("text") and rie.get("refs"), "RIE2030 alignment needs a finding and citations")
+    factsheet_refs = {r["key"] for r in data["other_references"] if r["url"] == "https://file.go.gov.sg/rie2030factsheet.pdf"}
+    ensure(factsheet_refs and factsheet_refs.intersection(rie["refs"]), "Cite the official RIE2030 factsheet in the alignment section")
+    ensure(set(rie["refs"]).intersection(keys), "Cite an original lab study in the RIE2030 alignment section")
     method_rows = []
     totals = []
     for family in data["methods"]:
@@ -81,6 +86,7 @@ def main():
       "RESEARCH_DIRECTIONS":"\n".join(para({"lead":"Stated directions." if p["source_type"] == "stated" else "Inferred from papers.", "text":p["text"], "refs":p["refs"]}) for p in directions),
       "OWNERSHIP":"\n".join(para(p) for p in data["ownership"]),
       "FIT_PARAGRAPHS":"\n".join(para({"lead":f["label"]+".", "text":f["text"], "refs":f.get("refs",[])}) for f in data["fit"]),
+      "RIE2030_ALIGNMENT":esc(rie["text"])+cited(rie),
       "POSTDOC_ROWS":"\n".join(postdoc_rows), "ALUMNI_SCOPE":esc(data["alumni_scope"]),
       "ALUMNI_ROWS":"\n".join(alumni_rows), "METHOD_SUMMARY":summary,
       "INSTITUTE_SUMMARY":esc(data["institute_summary"]["text"])+cited(data["institute_summary"]),
@@ -99,7 +105,7 @@ def main():
     report = PdfReader(pdf)
     ensure(len(report.pages) == 2, f"Report content spans {len(report.pages)} pages before figures; shorten it to one assessment page and one appendix page")
     page_one=report.pages[0].extract_text()
-    headings = ("Criteria", "Institute", "Working language", "Research directions", "Methods", "Research ownership", "Alumni outcomes", "Postdoc fit")
+    headings = ("Criteria", "Institute", "Working language", "Research directions", "Methods", "Research ownership", "Alumni outcomes", "Postdoc fit", "RIE2030 alignment")
     positions = [page_one.find(s) for s in headings]
     ensure(all(x >= 0 for x in positions) and positions == sorted(positions), "Assessment sections missing or out of order on page 1")
     writer = PdfWriter()

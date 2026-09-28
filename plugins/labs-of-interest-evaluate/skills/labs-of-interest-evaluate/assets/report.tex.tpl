@@ -38,6 +38,8 @@ ${POSTDOC_ROWS}
 \end{tabularx}
 \sect{Postdoc fit}
 ${FIT_PARAGRAPHS}
+\sect{RIE2030 alignment}
+${RIE2030_ALIGNMENT}\par
 \end{multicols*}
 \newpage
 {\bfseries Evidence appendix}\par
