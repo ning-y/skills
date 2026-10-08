@@ -2,3 +2,4 @@
 - **suggestcommit** — Conventional Commits commit message suggestions
 - **readme** — Repository README and top-level documentation
 - **labs-of-interest-evaluate** — Evidence-based lab screening reports
+- **duke-nus-hpc** — Duke-NUS HPC operations knowledge base (PBS Pro, Apptainer, ProteinMPNN, RFdiffusion)

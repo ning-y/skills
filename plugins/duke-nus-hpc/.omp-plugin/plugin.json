@@ -1,0 +1,9 @@
+{
+  "name": "duke-nus-hpc",
+  "version": "0.1.0",
+  "description": "Work on the Duke-NUS HPC cluster: PBS Pro job submission, Apptainer image builds, and per-program notes for ProteinMPNN and RFdiffusion.",
+  "author": {
+    "name": "ning",
+    "email": "ningyuan.sg@gmail.com"
+  }
+}

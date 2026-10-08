@@ -52,6 +52,15 @@
       "author": {
         "name": "ning"
       }
+    },
+    {
+      "name": "duke-nus-hpc",
+      "description": "Work on the Duke-NUS HPC cluster: PBS Pro job submission, Apptainer image builds, and per-program notes for ProteinMPNN and RFdiffusion.",
+      "source": "./plugins/duke-nus-hpc",
+      "version": "0.1.0",
+      "author": {
+        "name": "ning"
+      }
     }
   ]
 }
