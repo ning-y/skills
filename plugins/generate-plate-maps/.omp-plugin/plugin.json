@@ -1,0 +1,9 @@
+{
+  "name": "generate-plate-maps",
+  "version": "0.1.0",
+  "description": "Generate deterministic multi-view experimental plate maps with mixed plate formats and PNG/SVG/PDF exports.",
+  "author": {
+    "name": "ning",
+    "email": "ningyuan.sg@gmail.com"
+  }
+}

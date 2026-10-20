@@ -1,0 +1,2358 @@
+{
+  "schema_version": 1,
+  "experiment": {
+    "title": "Bat macrophage senescence marker optimization",
+    "subtitle": "Facet columns = plate; facet rows = view",
+    "footer": "No technical replicates.\n[1] Doxorubicin: 500 nM, 24 h pulse on D0; fix on D10–12.\n[2] Cisplatin: 1 µg/mL for 5 days; then fix.",
+    "metadata": {
+      "technical_replicates": false,
+      "sudan_black_layout_note": "One well per donor-treatment combination; UT at B2-B5, drug at C2-C5; donors aligned in columns 2-5 in the specified order."
+    }
+  },
+  "plates": [
+    {
+      "id": "plate-1",
+      "title": "Plate 1 – doxorubicin plate",
+      "rows": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "columns": 12,
+      "wells": [
+        {
+          "row": "A",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "C",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "C",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "C",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "DOXO",
+            "stain": "p16",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np16"
+        },
+        {
+          "row": "C",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "DOXO",
+            "stain": "p21",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np21"
+        },
+        {
+          "row": "C",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "DOXO",
+            "stain": "gH2AX",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\ngH2AX"
+        },
+        {
+          "row": "C",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "DOXO",
+            "stain": "2° only anti-mouse",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-mouse"
+        },
+        {
+          "row": "C",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "DOXO",
+            "stain": "2° only anti-rabbit",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "C",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "D",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "D",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "D",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "DOXO",
+            "stain": "p16",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np16"
+        },
+        {
+          "row": "D",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "DOXO",
+            "stain": "p21",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np21"
+        },
+        {
+          "row": "D",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "DOXO",
+            "stain": "gH2AX",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\ngH2AX"
+        },
+        {
+          "row": "D",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "DOXO",
+            "stain": "2° only anti-mouse",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-mouse"
+        },
+        {
+          "row": "D",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "DOXO",
+            "stain": "2° only anti-rabbit",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "D",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "E",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "E",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "E",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "DOXO",
+            "stain": "p16",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np16"
+        },
+        {
+          "row": "E",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "DOXO",
+            "stain": "p21",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np21"
+        },
+        {
+          "row": "E",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "DOXO",
+            "stain": "gH2AX",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\ngH2AX"
+        },
+        {
+          "row": "E",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "DOXO",
+            "stain": "2° only anti-mouse",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-mouse"
+        },
+        {
+          "row": "E",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "DOXO",
+            "stain": "2° only anti-rabbit",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "E",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "F",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "F",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "F",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "DOXO",
+            "stain": "p16",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np16"
+        },
+        {
+          "row": "F",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "DOXO",
+            "stain": "p21",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\np21"
+        },
+        {
+          "row": "F",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "DOXO",
+            "stain": "gH2AX",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\ngH2AX"
+        },
+        {
+          "row": "F",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "DOXO",
+            "stain": "2° only anti-mouse",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-mouse"
+        },
+        {
+          "row": "F",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "DOXO",
+            "stain": "2° only anti-rabbit",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "F",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        }
+      ],
+      "format": 96
+    },
+    {
+      "id": "plate-2",
+      "title": "Plate 2 – cisplatin plate",
+      "rows": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "columns": 12,
+      "wells": [
+        {
+          "row": "A",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "C",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "C",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "C",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "CIS",
+            "stain": "p16",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np16"
+        },
+        {
+          "row": "C",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "CIS",
+            "stain": "p21",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np21"
+        },
+        {
+          "row": "C",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "CIS",
+            "stain": "gH2AX",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\ngH2AX"
+        },
+        {
+          "row": "C",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "CIS",
+            "stain": "2° only anti-mouse",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-mouse"
+        },
+        {
+          "row": "C",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "CIS",
+            "stain": "2° only anti-rabbit",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "C",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "D",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "D",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "D",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "CIS",
+            "stain": "p16",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np16"
+        },
+        {
+          "row": "D",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "CIS",
+            "stain": "p21",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np21"
+        },
+        {
+          "row": "D",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "CIS",
+            "stain": "gH2AX",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\ngH2AX"
+        },
+        {
+          "row": "D",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "CIS",
+            "stain": "2° only anti-mouse",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-mouse"
+        },
+        {
+          "row": "D",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "CIS",
+            "stain": "2° only anti-rabbit",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "D",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "E",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "E",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "E",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "CIS",
+            "stain": "p16",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np16"
+        },
+        {
+          "row": "E",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "CIS",
+            "stain": "p21",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np21"
+        },
+        {
+          "row": "E",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "CIS",
+            "stain": "gH2AX",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\ngH2AX"
+        },
+        {
+          "row": "E",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "CIS",
+            "stain": "2° only anti-mouse",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-mouse"
+        },
+        {
+          "row": "E",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "CIS",
+            "stain": "2° only anti-rabbit",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "E",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "E",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "p16"
+          },
+          "label": "UT\np16"
+        },
+        {
+          "row": "F",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "p21"
+          },
+          "label": "UT\np21"
+        },
+        {
+          "row": "F",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "gH2AX"
+          },
+          "label": "UT\ngH2AX"
+        },
+        {
+          "row": "F",
+          "column": 6,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "CIS",
+            "stain": "p16",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np16"
+        },
+        {
+          "row": "F",
+          "column": 7,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "CIS",
+            "stain": "p21",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\np21"
+        },
+        {
+          "row": "F",
+          "column": 8,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "CIS",
+            "stain": "gH2AX",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\ngH2AX"
+        },
+        {
+          "row": "F",
+          "column": 9,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "CIS",
+            "stain": "2° only anti-mouse",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-mouse"
+        },
+        {
+          "row": "F",
+          "column": 10,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "CIS",
+            "stain": "2° only anti-rabbit",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\n2° only\nanti-rabbit"
+        },
+        {
+          "row": "F",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "F",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "G",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 7,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 8,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 9,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 10,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 11,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "H",
+          "column": 12,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        }
+      ],
+      "format": 96
+    },
+    {
+      "id": "plate-3",
+      "title": "Plate 3 – doxorubicin plate",
+      "format": 24,
+      "wells": [
+        {
+          "row": "A",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 2,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 2,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "DOXO",
+            "stain": "Sudan black",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "DOXO",
+            "stain": "Sudan black",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "DOXO",
+            "stain": "Sudan black",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "DOXO",
+            "stain": "Sudan black",
+            "dose": "500 nM",
+            "exposure": "24 h pulse on D0",
+            "fixation": "D10–12",
+            "reference": "[1]"
+          },
+          "label": "DOXO\n500 nM\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        }
+      ],
+      "metadata": {
+        "assay": "Sudan black",
+        "technical_replicates": false,
+        "layout_basis": "One well per donor-treatment combination"
+      }
+    },
+    {
+      "id": "plate-4",
+      "title": "Plate 4 – cisplatin plate",
+      "format": 24,
+      "wells": [
+        {
+          "row": "A",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "A",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "B",
+          "column": 2,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "UT",
+            "stain": "Sudan black"
+          },
+          "label": "UT\nSudan\nblack"
+        },
+        {
+          "row": "B",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "C",
+          "column": 2,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES345M",
+            "treatment": "CIS",
+            "stain": "Sudan black",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 3,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES296F",
+            "treatment": "CIS",
+            "stain": "Sudan black",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 4,
+          "status": "occupied",
+          "attributes": {
+            "donor": "ES363M",
+            "treatment": "CIS",
+            "stain": "Sudan black",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 5,
+          "status": "occupied",
+          "attributes": {
+            "donor": "EsDermFib",
+            "treatment": "CIS",
+            "stain": "Sudan black",
+            "dose": "1 µg/mL",
+            "exposure": "5 days",
+            "fixation": "After 5 days of treatment",
+            "reference": "[2]"
+          },
+          "label": "CIS\n1 µg/mL\nSudan\nblack"
+        },
+        {
+          "row": "C",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 1,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 2,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 3,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 4,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 5,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        },
+        {
+          "row": "D",
+          "column": 6,
+          "status": "empty",
+          "attributes": {},
+          "label": "empty"
+        }
+      ],
+      "metadata": {
+        "assay": "Sudan black",
+        "technical_replicates": false,
+        "layout_basis": "One well per donor-treatment combination"
+      }
+    }
+  ],
+  "views": [
+    {
+      "id": "donor",
+      "name": "donor",
+      "field": "donor",
+      "categories": [
+        {
+          "value": "ES345M",
+          "color": "#91BCE0"
+        },
+        {
+          "value": "ES296F",
+          "color": "#E6AD91"
+        },
+        {
+          "value": "ES363M",
+          "color": "#ACD0B5"
+        },
+        {
+          "value": "EsDermFib",
+          "color": "#C2B1DC"
+        }
+      ],
+      "legend": {
+        "title": "Donor"
+      }
+    },
+    {
+      "id": "treatment",
+      "name": "treatment",
+      "field": "treatment",
+      "categories": [
+        {
+          "value": "UT",
+          "color": "#C9D1DA"
+        },
+        {
+          "value": "DOXO",
+          "color": "#EBA394"
+        },
+        {
+          "value": "CIS",
+          "color": "#9BBBE0"
+        }
+      ],
+      "legend": {
+        "title": "Treatment / category"
+      }
+    },
+    {
+      "id": "stain",
+      "name": "stain",
+      "field": "stain",
+      "categories": [
+        {
+          "value": "p16",
+          "color": "#9DC6E5"
+        },
+        {
+          "value": "p21",
+          "color": "#E9C978"
+        },
+        {
+          "value": "gH2AX",
+          "color": "#AFCFB8"
+        },
+        {
+          "value": "2° only anti-mouse",
+          "color": "#C6B2DC"
+        },
+        {
+          "value": "2° only anti-rabbit",
+          "color": "#E5B3C9"
+        },
+        {
+          "value": "Sudan black",
+          "color": "#9BA7AB"
+        }
+      ],
+      "legend": {
+        "title": "Stain / assay target"
+      }
+    }
+  ],
+  "style": {
+    "cell_inches": 0.75,
+    "font_size": 8.7,
+    "min_font_size": 7.0,
+    "dpi": 300,
+    "show_empty": true,
+    "plate_scale": "fit"
+  }
+}
