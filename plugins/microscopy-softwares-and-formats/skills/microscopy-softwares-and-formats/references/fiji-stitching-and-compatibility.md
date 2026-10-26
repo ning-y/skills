@@ -57,8 +57,16 @@ export, and validate.
    - type `Positions from file`;
    - order `Defined by TileConfiguration`;
    - overlap computation enabled for the reference channel;
-   - `Do not fuse images (only write TileConfiguration)` for the registration pass;
+   - `image_output=[Fuse and display]`;
    - memory-saving computation for large mosaics.
+
+   Grid/Collection Stitching 3.1.9 offers only `Fuse and display` and
+   `Write to disk` for `Image_output`; it has no registration-only choice.
+   Supplying `Do not fuse images (only write TileConfiguration)` is silently
+   ignored and the plugin fuses anyway. The run still writes
+   `TileConfiguration.registered.txt` beside the layout file, so read that
+   file after the reference-channel fusion and reuse it for the other
+   channels.
 4. Inspect the generated `.registered.txt` configuration.
 5. Apply the chosen coordinates unchanged to other channels by changing only
    the channel filename token, such as `d0.TIF` to `d1.TIF`.
@@ -81,13 +89,32 @@ another or disappear if fused directly.
 
 Use this decision rule:
 
-- One origin: use the overlap-refined registered coordinates.
+- One origin with the expected tile entries: candidate registered coordinates;
+  inspect displacement plausibility and informative overlaps before accepting
+  image-derived alignment. Connectivity alone is not proof.
 - Multiple origins: retain the original EVOS stage-position layout for the whole
   ROI and use it for every channel.
 
-This fallback preserves all tiles and their commanded geometry; it does not
-claim subpixel refinement across overlaps that contained insufficient signal.
-Save both the initial and final configurations so the choice is auditable.
+This fallback retains stage-based placement, not subpixel refinement. A
+disconnected graph does not establish its cause; low signal is one possibility.
+Save initial/final configurations when retaining work so the choice is
+auditable. The Python helper's bounded stage-only path additionally rounds
+positions once to the nearest global pixel; see the EVOS export reference.
+
+## Large planes: distinguish heap from ImageJ's array limit
+
+An out-of-memory failure may be a heap shortage, while
+`NegativeArraySizeException` in `ShortProcessor` can be width-times-height
+integer overflow. ImageJ's 2-D plane limit is 2^31-1 pixels, independent of
+available heap. `Write to disk` still allocates a 2-D fusion plane in the
+verified plugin, so it does not remove that limit.
+
+Use the Python helper's preflight and bounded fusion path rather than
+independently fusing tile halves and pasting their bounding rectangles.
+Every window must include all tiles contributing to its output core, use one
+global layout, and copy disjoint cores only. Uncovered pixels are not the
+same as measured zeros. Inspect every artificial boundary, not just the
+whole-slide overview.
 
 ## Headless execution details
 
@@ -97,6 +124,11 @@ A typical invocation is:
 fiji --ij2 --headless --memory 10g --run script.groovy
 ```
 
+Launcher memory switches vary. The helper's `--memory-gb N` uses
+`_JAVA_OPTIONS=-XmxNg`, then queries `Runtime.maxMemory()` in the actual Fiji
+JVM. It reports estimates and plans windows with headroom; neither heap
+maximum nor those estimates guarantee enough free physical RAM.
+
 Observed details worth preserving:
 
 - Calling the Bio-Formats export menu command headlessly can open an AWT-only
@@ -105,12 +137,22 @@ Observed details worth preserving:
   this mode. Replace only the known generated output immediately before export;
   never delete source TIFFs or a broad directory.
 - Plugin-discovery and Java reflective-access warnings can coexist with a
-  successful run. Judge success from exit state, explicit script checks, and
-  output validation, not from the mere presence of warnings.
+  successful run. Conversely, Fiji can exit zero after a macro error.
+  `run_fiji()` retains a complete per-invocation log, requires an explicit
+  completion marker, rejects fatal macro/JVM diagnostics, and checks the
+  generated grayscale plane. Missing/invalid output reports the log path and
+  diagnostic context. Failed temporary work is retained, not silently removed.
 
 ## Required validation
 
-After each ROI, reopen the OME-TIFF with Bio-Formats and verify:
+For the scripted helper, every final TIFF is fully decoded and compared to the
+fused canvas before atomic publication; its `.qc/verification.json` records
+checks, statistics, preview paths, and limitations. This checks export
+fidelity, not whether tissue was registered correctly. The standalone
+`scripts/verify_evos_stitch.py` checks existing TIFF self-consistency without
+claiming independent knowledge of acquisition metadata.
+
+Also check representative files with Bio-Formats:
 
 - nonzero file size and readable pixels;
 - expected mosaic width and height;
@@ -121,6 +163,22 @@ After each ROI, reopen the OME-TIFF with Bio-Formats and verify:
 - identical dimensions and alignment across channels;
 - no duplicated origin tiles, missing components, or obvious seam failure.
 
-Generate separate DAPI and GFP previews plus a composite. Fiji's default
-composite LUT may display channel 1 as red even when it is DAPI. State channel
-order explicitly and never infer identity from the preview color.
+Generate separate-channel previews plus a composite. Fiji's default composite
+LUT may display channel 1 as red even when it is DAPI. State channel order
+explicitly and never infer identity from preview color. Inspect informative
+overlaps and every partition boundary; record actual visual observations
+separately from automated checks. Preview stretching must not alter the
+scientific TIFF. Linear blending/resampling creates derived pixel values even
+when no display normalization is applied.
+
+The GUI Bio-Formats importer can fail headlessly with a dialog-related
+`VerifyError` (`MainDialog.rebuildDialog`/`GenericDialog`). That alone is not
+evidence of file corruption. To bypass the dialog, this ImageJ macro queries
+the reader and decodes a small region without opening a whole mosaic:
+
+```ijm
+eval("script", "var r = new (Java.type('loci.formats.ImageReader'))(); try { r.setId('/absolute/path/image.tif'); print('BF_READER x=' + r.getSizeX() + ' y=' + r.getSizeY() + ' c=' + r.getSizeC() + ' type=' + r.getPixelType()); r.openBytes(0, 0, 0, Math.min(64, r.getSizeX()), Math.min(64, r.getSizeY())); } finally { r.close(); }");
+```
+
+Run it with `fiji --headless --console -macro check.ijm`. This reader check is
+metadata plus a sampled pixel decode, not whole-file verification or seam QC.

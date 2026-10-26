@@ -12,7 +12,12 @@ make the transformation from acquisition layout to Fiji inputs reproducible.
 ## Route the task
 
 - For an EVOS M7000 export, first read
-  [references/evos-m7000-exports.md](references/evos-m7000-exports.md).
+  [references/evos-m7000-exports.md](references/evos-m7000-exports.md). To turn
+  a raw scan directory into one stitched TIFF, use
+  `scripts/stitch_evos_m7000.py` as described there.
+- For scans stored on Dropbox, read
+  [references/dropbox-rclone.md](references/dropbox-rclone.md). Dropbox access
+  is strictly read-only; download to a local scratch tree before stitching.
 - For Fiji import failures, BigStitcher errors, tile registration, fusion, or
   OME-TIFF export, read
   [references/fiji-stitching-and-compatibility.md](references/fiji-stitching-and-compatibility.md).
@@ -22,7 +27,10 @@ make the transformation from acquisition layout to Fiji inputs reproducible.
 
 ## Core workflow
 
-1. Inventory acquisition directories and parse filenames before opening files
+1. Honor an explicit local destination; otherwise use a task-named directory
+   under the current working directory. Announce its exact absolute path before
+   downloads, extraction, or processing; never invent a home-root folder.
+   Inventory acquisition directories and parse filenames before opening files
    recursively. Determine the acquisition, field, ROI, channel, Z, and time axes
    from both names and metadata.
 2. Open representative files with Fiji Bio-Formats and compare the reported
@@ -38,14 +46,31 @@ make the transformation from acquisition layout to Fiji inputs reproducible.
    same final tile coordinates to all other channels.
 6. Validate the result numerically and visually: dimensions, channel count and
    order, bit depth, calibration, missing/duplicated tiles, seams, and alignment.
-   Save separate-channel previews as well as a composite.
+   Use `scripts/verify_evos_stitch.py` for bounded decoding, metadata checks, and
+   previews, not proof that all pixels are correct. Manually inspect informative
+   overlaps and every partition boundary; save separate-channel previews and a
+   composite. Report checks actually performed separately from conclusions.
+   Example: `python3 scripts/verify_evos_stitch.py /absolute/output.ome.tif
+   --preview-dir /absolute/task/evidence/qc`. CLI metadata checks establish
+   self-consistency, not agreement with trusted expected dimensions/calibration;
+   use the API's expected values for that comparison.
 
 ## Guardrails
 
-- Keep raw TIFFs read-only. Write configurations, mosaics, previews, masks, and
-  reports to a separate output tree.
-- Preserve raw intensity values during quantitative work. Contrast enhancement
-  belongs only in previews unless an analysis explicitly defines otherwise.
+- Keep raw data unchanged; make downloaded/extracted raw files read-only, not
+  directories recursively unwritable. Keep raw input, managed scratch, and final
+  outputs separate. Clean only task-owned scratch after validation, retaining
+  small logs/configurations/verification evidence; never automatically delete
+  sources or user-owned files.
+- Treat every Dropbox/rclone remote as strictly read-only: never upload, move,
+  delete, or modify remote files. Download to local scratch before analysis.
+  For ZIP inputs, follow the safe inventory/extraction recipe in the Dropbox
+  reference; do not extract blindly.
+- Do not normalize scientific outputs for display. Contrast enhancement belongs
+  only in previews unless an analysis explicitly defines otherwise. Blending
+  and resampling produce derived intensities, not unchanged source pixels.
+- Never rerun a user-reported failing command merely to confirm the failure;
+  use the reported evidence to diagnose it.
 - Treat LUT colors as display metadata, not channel identity.
 - Distinguish an image-level comparison from a biological-replicate test.
 - Record software versions and all assumptions that were inferred rather than
